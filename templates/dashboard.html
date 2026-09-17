@@ -67,20 +67,213 @@
 
 
         <!-- Medicines -->
-        <section class="dashboard-card">
+<!-- Add Medicine -->
 
-            <div class="section-heading">
-                <div>
-                    <h2>Medicines</h2>
-                    <p>Your pharmacy medicine inventory.</p>
-                </div>
-            </div>
+<section class="dashboard-card">
 
-            <div id="medicineList" class="medicine-list">
-                <p>Loading medicines...</p>
-            </div>
+    <div class="section-heading">
+        <div>
+            <h2>Add Medicine</h2>
+            <p>Add a new medicine to your pharmacy inventory.</p>
+        </div>
+    </div>
 
-        </section>
+    <form id="medicineForm">
+
+        <div class="form-group">
+            <label for="medicineName">Medicine Name</label>
+            <input
+                type="text"
+                id="medicineName"
+                placeholder="e.g. Paracetamol"
+                required>
+        </div>
+
+        <div class="form-group">
+            <label for="genericName">Generic Name</label>
+            <input
+                type="text"
+                id="genericName"
+                placeholder="e.g. Acetaminophen">
+        </div>
+
+        <button type="submit" class="primary-button">
+            Add Medicine
+        </button>
+
+        <p id="medicineMessage" class="form-message"></p>
+
+    </form>
+
+</section>
+
+
+<!-- Medicine Inventory -->
+
+<section class="dashboard-card">
+
+    <div class="section-heading">
+        <div>
+            <h2>Medicines</h2>
+            <p>Your pharmacy medicine inventory.</p>
+        </div>
+    </div>
+
+
+    <!-- Sorting -->
+
+    <div class="medicine-controls">
+
+        <select id="sortBy">
+            <option value="name">Name</option>
+            <option value="generic_name">Generic Name</option>
+            <option value="created_at">Created Date</option>
+        </select>
+
+        <select id="sortOrder">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+        </select>
+
+    </div>
+
+
+    <!-- Medicine List -->
+
+    <div id="medicineList" class="medicine-list">
+        <p>Loading medicines...</p>
+    </div>
+
+
+    <!-- Pagination -->
+
+    <div class="pagination-controls">
+
+        <button
+            type="button"
+            class="primary-button"
+            id="previousPage">
+            Previous
+        </button>
+
+        <span id="pageInfo">Page 1</span>
+
+        <button
+            type="button"
+            class="primary-button"
+            id="nextPage">
+            Next
+        </button>
+
+    </div>
+
+</section>
+
+        <!-- Add Batch -->
+
+<section class="dashboard-card">
+
+    <div class="section-heading">
+        <div>
+            <h2>Add Medicine Batch</h2>
+            <p>Add stock with its batch number, quantity and expiry date.</p>
+        </div>
+    </div>
+
+    <form id="batchForm">
+
+        <div class="form-group">
+            <label for="batchMedicineId">Medicine ID</label>
+            <input
+                type="number"
+                id="batchMedicineId"
+                placeholder="e.g. 1"
+                min="1"
+                required>
+        </div>
+
+        <div class="form-group">
+            <label for="batchNumber">Batch Number</label>
+            <input
+                type="text"
+                id="batchNumber"
+                placeholder="e.g. PARA-004"
+                required>
+        </div>
+
+        <div class="form-group">
+            <label for="batchQuantity">Quantity</label>
+            <input
+                type="number"
+                id="batchQuantity"
+                placeholder="e.g. 100"
+                min="1"
+                required>
+        </div>
+
+        <div class="form-group">
+            <label for="expiryDate">Expiry Date</label>
+            <input
+                type="date"
+                id="expiryDate"
+                required>
+        </div>
+
+        <button type="submit" class="primary-button">
+            Add Batch
+        </button>
+
+        <p id="batchMessage" class="form-message"></p>
+
+    </form>
+
+</section>
+
+<!-- Dispense Medicine -->
+
+<section class="dashboard-card">
+
+    <div class="section-heading">
+        <div>
+            <h2>Dispense Medicine</h2>
+            <p>
+                Medicine will be dispensed using
+                First-Expiry-First-Out (FEFO).
+            </p>
+        </div>
+    </div>
+
+    <form id="dispenseForm">
+
+        <div class="form-group">
+            <label for="dispenseMedicineId">Medicine ID</label>
+            <input
+                type="number"
+                id="dispenseMedicineId"
+                placeholder="e.g. 1"
+                min="1"
+                required>
+        </div>
+
+        <div class="form-group">
+            <label for="dispenseQuantity">Quantity</label>
+            <input
+                type="number"
+                id="dispenseQuantity"
+                placeholder="e.g. 20"
+                min="1"
+                required>
+        </div>
+
+        <button type="submit" class="primary-button">
+            Dispense Medicine
+        </button>
+
+        <p id="dispenseMessage" class="form-message"></p>
+
+    </form>
+
+</section>
 
 
         <!-- Alerts -->

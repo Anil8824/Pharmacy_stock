@@ -564,3 +564,43 @@ footer {
         flex-direction: column;
     }
 }
+
+.medicine-controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.medicine-controls select {
+    padding: 11px 14px;
+    border: 1px solid #dbe1ea;
+    border-radius: 10px;
+    background: white;
+    color: #334155;
+    font-size: 14px;
+    cursor: pointer;
+    outline: none;
+}
+
+.medicine-controls select:focus {
+    border-color: #4361ee;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    margin-top: 28px;
+}
+
+.pagination-controls span {
+    font-weight: 600;
+    color: #475569;
+}
+
+.pagination-controls button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}

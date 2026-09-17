@@ -1,12 +1,13 @@
 from datetime import date, timedelta
 
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, session, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database import get_db_connection, init_db
 
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = "pharmastock-development-secret-key"
 
 # Make sure the database and tables exist when the application starts.
 init_db()
@@ -74,6 +75,9 @@ def login():
     if not user or not check_password_hash(user["password_hash"], password):
         return jsonify({"error": "Invalid email or password"}), 401
 
+    session["user_id"] = user["id"]
+    session["user_name"] = user["name"]
+
     return jsonify({
         "message": "Login successful",
         "user": {
@@ -111,13 +115,22 @@ def add_medicine():
         "medicine_id": medicine_id
     }), 201
 
-
 @app.route("/api/medicines", methods=["GET"])
 def get_medicines():
     search = request.args.get("search", "").strip()
-    page = max(request.args.get("page", 1, type=int), 1)
-    limit = min(max(request.args.get("limit", 10, type=int), 1), 50)
-    sort = request.args.get("sort", "name").lower()
+
+    page = max(
+        request.args.get("page", 1, type=int),
+        1
+    )
+
+    limit = min(
+        max(request.args.get("limit", 10, type=int), 1),
+        50
+    )
+
+    sort_by = request.args.get("sort_by", "name").lower()
+    sort_order = request.args.get("sort_order", "asc").lower()
 
     allowed_sort_fields = {
         "name": "name",
@@ -125,7 +138,13 @@ def get_medicines():
         "created_at": "created_at"
     }
 
-    sort_field = allowed_sort_fields.get(sort, "name")
+    sort_field = allowed_sort_fields.get(
+        sort_by,
+        "name"
+    )
+
+    order = "DESC" if sort_order == "desc" else "ASC"
+
     offset = (page - 1) * limit
 
     connection = get_db_connection()
@@ -134,18 +153,55 @@ def get_medicines():
         search_pattern = f"%{search}%"
 
         medicines = connection.execute(
-            f"SELECT id, name, generic_name, created_at FROM medicines WHERE name LIKE ? OR generic_name LIKE ? ORDER BY {sort_field} ASC LIMIT ? OFFSET ?",
-            (search_pattern, search_pattern, limit, offset)
+            f"""
+            SELECT
+                id,
+                name,
+                generic_name,
+                created_at
+            FROM medicines
+            WHERE name LIKE ?
+               OR generic_name LIKE ?
+            ORDER BY {sort_field} {order}
+            LIMIT ? OFFSET ?
+            """,
+            (
+                search_pattern,
+                search_pattern,
+                limit,
+                offset
+            )
         ).fetchall()
 
         total = connection.execute(
-            "SELECT COUNT(*) FROM medicines WHERE name LIKE ? OR generic_name LIKE ?",
-            (search_pattern, search_pattern)
+            """
+            SELECT COUNT(*)
+            FROM medicines
+            WHERE name LIKE ?
+               OR generic_name LIKE ?
+            """,
+            (
+                search_pattern,
+                search_pattern
+            )
         ).fetchone()[0]
+
     else:
         medicines = connection.execute(
-            f"SELECT id, name, generic_name, created_at FROM medicines ORDER BY {sort_field} ASC LIMIT ? OFFSET ?",
-            (limit, offset)
+            f"""
+            SELECT
+                id,
+                name,
+                generic_name,
+                created_at
+            FROM medicines
+            ORDER BY {sort_field} {order}
+            LIMIT ? OFFSET ?
+            """,
+            (
+                limit,
+                offset
+            )
         ).fetchall()
 
         total = connection.execute(
@@ -155,12 +211,17 @@ def get_medicines():
     connection.close()
 
     return jsonify({
-        "medicines": [dict(medicine) for medicine in medicines],
+        "medicines": [
+            dict(medicine)
+            for medicine in medicines
+        ],
         "pagination": {
             "page": page,
             "limit": limit,
             "total": total,
-            "total_pages": (total + limit - 1) // limit
+            "total_pages": (
+                (total + limit - 1) // limit
+            )
         }
     })
 
@@ -330,6 +391,9 @@ def login_page():
 
 @app.route("/dashboard")
 def dashboard_page():
+    if "user_id" not in session:
+        return redirect(url_for("login_page"))
+
     return render_template("dashboard.html")
 
 
