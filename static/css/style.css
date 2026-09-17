@@ -27,6 +27,9 @@ a {
 .navbar {
     border-bottom: 1px solid #e5e7eb;
     background: #ffffff;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
 }
 
 .nav-content {
@@ -34,6 +37,22 @@ a {
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+.nav-container {
+    width: 90%;
+    max-width: 1150px;
+    height: 70px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
 }
 
 .logo {
