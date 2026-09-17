@@ -1,4 +1,4 @@
-# Reasoning
+# 🧠 Reasoning
 
 ## 1. Problem Understanding
 
@@ -52,11 +52,11 @@ Stores registered pharmacy users.
 
 Important fields:
 
-- id
-- name
-- email
-- password_hash
-- created_at
+- `id`
+- `name`
+- `email`
+- `password_hash`
+- `created_at`
 
 Passwords are stored as hashes instead of plain text.
 
@@ -66,10 +66,10 @@ Stores medicine information.
 
 Important fields:
 
-- id
-- name
-- generic_name
-- created_at
+- `id`
+- `name`
+- `generic_name`
+- `created_at`
 
 ### Batches
 
@@ -77,12 +77,12 @@ Stores individual medicine batches.
 
 Important fields:
 
-- id
-- medicine_id
-- batch_number
-- quantity
-- expiry_date
-- created_at
+- `id`
+- `medicine_id`
+- `batch_number`
+- `quantity`
+- `expiry_date`
+- `created_at`
 
 Each batch is linked to a medicine using a foreign key.
 
@@ -92,17 +92,17 @@ Stores medicine dispensing history.
 
 Important fields:
 
-- id
-- medicine_id
-- batch_id
-- quantity
-- dispensed_at
+- `id`
+- `medicine_id`
+- `batch_id`
+- `quantity`
+- `dispensed_at`
 
 ---
 
 ## 4. FEFO Logic
 
-The core business logic uses First-Expiry-First-Out.
+The core business logic uses **First-Expiry-First-Out (FEFO)**.
 
 When a pharmacist requests a quantity of medicine:
 
@@ -148,6 +148,8 @@ The dashboard uses this API to display upcoming expiry alerts.
 
 User registration and login were implemented.
 
+### Registration
+
 During registration:
 
 1. User details are validated.
@@ -156,14 +158,15 @@ During registration:
 4. Passwords are hashed using Werkzeug.
 5. The user is stored in the database.
 
+### Login
+
 During login:
 
 1. The email is searched in the database.
 2. The password hash is verified.
-3. A Flask session is created after successful authentication.
+3. A Flask session is created.
 4. The dashboard checks the session before allowing access.
-
-Unauthenticated users are redirected to the login page.
+5. Unauthenticated users are redirected to the login page.
 
 ---
 
@@ -178,9 +181,9 @@ Pagination was added to prevent returning an unnecessarily large number of recor
 
 The API supports sorting by:
 
-- name
-- generic_name
-- created_at
+- `name`
+- `generic_name`
+- `created_at`
 
 Both ascending and descending sorting are supported.
 
@@ -190,7 +193,7 @@ Both ascending and descending sorting are supported.
 
 The application was tested incrementally while implementing each feature.
 
-## Authentication Testing
+## 9.1 Authentication Testing
 
 Tested:
 
@@ -204,7 +207,7 @@ The login flow was also tested through the browser.
 
 ---
 
-## Medicine Testing
+## 9.2 Medicine Testing
 
 Tested:
 
@@ -218,7 +221,7 @@ Test medicines were created during development to verify the functionality.
 
 ---
 
-## Batch Testing
+## 9.3 Batch Testing
 
 Tested:
 
@@ -229,7 +232,7 @@ Tested:
 
 ---
 
-## FEFO Testing
+## 9.4 FEFO Testing
 
 Multiple Paracetamol batches were created with different expiry dates.
 
@@ -237,110 +240,9 @@ The system was tested by dispensing a quantity larger than the available quantit
 
 The system correctly consumed the earliest valid batch first and then moved to the next valid batch when required.
 
-Example:
+### Example
 
 ```text
 PARA-001 → 100 units
 PARA-002 → 150 units
 PARA-003 → 200 units
-
-When 120 units were dispensed:
-
-PARA-001 → 100
-PARA-002 → 20
-
-This verified the FEFO behavior.
-
-Expired Batch Testing
-
-An expired test batch was intentionally added:
-
-Batch: EXPIRED-001
-Quantity: 50
-Expiry Date: 2026-09-10
-
-A dispensing request was then made.
-
-The system did not select the expired batch.
-
-Instead, it selected the earliest valid non-expired batch.
-
-The expired test batch was removed after testing.
-
-Sellable Stock Testing
-
-The stock API was tested after dispensing operations.
-
-The API correctly returned only stock from non-expired batches.
-
-Example response:
-
-{
-  "as_of_date": "2026-09-17",
-  "medicine": "Paracetamol",
-  "sellable_stock": 330
-}
-Expiry Alert Testing
-
-The expiry alert API was tested using:
-
-/api/alerts/expiring?days=30
-
-The system correctly returned batches approaching expiry while excluding batches outside the selected expiry window.
-
-10. Issues Found and Fixes
-Issue 1 — Dashboard Route
-
-Initially, the dashboard page was not available.
-
-A /dashboard route was added to render the dashboard page.
-
-Issue 2 — Login Protection
-
-Initially, the dashboard could be opened without authentication.
-
-Flask sessions were added.
-
-The dashboard now checks whether a user session exists and redirects unauthenticated users to the login page.
-
-Issue 3 — Stock Display
-
-The stock API returned the medicine name as a string.
-
-The frontend initially expected the medicine value to be an object containing a name property.
-
-This caused the medicine name to appear as undefined.
-
-The frontend was corrected to use the medicine string returned by the API.
-
-Issue 4 — Sorting
-
-Initially, the frontend sent:
-
-sort_by
-sort_order
-
-but the backend only handled the sort field and always used ascending order.
-
-The API was updated to support both sort_by and sort_order.
-
-The sorting functionality was then tested with both ascending and descending order.
-
-11. Final Validation
-
-The following functionality was successfully tested:
-
-User registration
-User login
-Session-based dashboard access
-Medicine creation
-Medicine search
-Medicine sorting
-Pagination support
-Batch creation
-FEFO dispensing
-Expired batch protection
-Sellable stock calculation
-Expiry alerts
-Dashboard integration
-REST API communication
