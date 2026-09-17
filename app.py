@@ -168,6 +168,197 @@ def get_medicines():
     })
 
 
+@app.route("/api/medicines/<int:medicine_id>/batches", methods=["POST"])
+def add_batch(medicine_id):
+    data = request.get_json() or {}
+
+    batch_number = data.get("batch_number", "").strip()
+    quantity = data.get("quantity")
+    expiry_date = data.get("expiry_date", "").strip()
+
+    if not batch_number or quantity is None or not expiry_date:
+        return jsonify({"error": "Batch number, quantity and expiry date are required"}), 400
+
+    try:
+        quantity = int(quantity)
+    except (TypeError, ValueError):
+        return jsonify({"error": "Quantity must be a number"}), 400
+
+    if quantity <= 0:
+        return jsonify({"error": "Quantity must be greater than 0"}), 400
+
+    connection = get_db_connection()
+
+    medicine = connection.execute(
+        "SELECT id FROM medicines WHERE id = ?",
+        (medicine_id,)
+    ).fetchone()
+
+    if not medicine:
+        connection.close()
+        return jsonify({"error": "Medicine not found"}), 404
+
+    connection.execute(
+        "INSERT INTO batches (medicine_id, batch_number, quantity, expiry_date) VALUES (?, ?, ?, ?)",
+        (medicine_id, batch_number, quantity, expiry_date)
+    )
+
+    connection.commit()
+    connection.close()
+
+    return jsonify({
+        "message": "Batch added successfully"
+    }), 201
+
+
+@app.route("/api/medicines/<int:medicine_id>/dispense", methods=["POST"])
+def dispense_medicine(medicine_id):
+    data = request.get_json() or {}
+    requested_quantity = data.get("quantity")
+
+    try:
+        requested_quantity = int(requested_quantity)
+    except (TypeError, ValueError):
+        return jsonify({"error": "Quantity must be a number"}), 400
+
+    if requested_quantity <= 0:
+        return jsonify({"error": "Quantity must be greater than 0"}), 400
+
+    connection = get_db_connection()
+
+    medicine = connection.execute(
+        "SELECT id, name FROM medicines WHERE id = ?",
+        (medicine_id,)
+    ).fetchone()
+
+    if not medicine:
+        connection.close()
+        return jsonify({"error": "Medicine not found"}), 404
+
+    today = date.today().isoformat()
+
+    batches = connection.execute(
+        "SELECT id, batch_number, quantity, expiry_date FROM batches WHERE medicine_id = ? AND quantity > 0 AND expiry_date >= ? ORDER BY expiry_date ASC, id ASC",
+        (medicine_id, today)
+    ).fetchall()
+
+    available_quantity = sum(batch["quantity"] for batch in batches)
+
+    if available_quantity < requested_quantity:
+        connection.close()
+        return jsonify({
+            "error": "Insufficient in-date stock",
+            "available_quantity": available_quantity
+        }), 400
+
+    remaining_quantity = requested_quantity
+    dispensed_batches = []
+
+    try:
+        for batch in batches:
+            if remaining_quantity == 0:
+                break
+
+            quantity_from_batch = min(batch["quantity"], remaining_quantity)
+
+            connection.execute(
+                "UPDATE batches SET quantity = quantity - ? WHERE id = ?",
+                (quantity_from_batch, batch["id"])
+            )
+
+            connection.execute(
+                "INSERT INTO dispense_records (medicine_id, batch_id, quantity) VALUES (?, ?, ?)",
+                (medicine_id, batch["id"], quantity_from_batch)
+            )
+
+            dispensed_batches.append({
+                "batch_number": batch["batch_number"],
+                "quantity": quantity_from_batch,
+                "expiry_date": batch["expiry_date"]
+            })
+
+            remaining_quantity -= quantity_from_batch
+
+        connection.commit()
+    except Exception:
+        connection.rollback()
+        connection.close()
+        return jsonify({"error": "Unable to complete dispensing"}), 500
+
+    connection.close()
+
+    return jsonify({
+        "message": "Medicine dispensed successfully",
+        "medicine": medicine["name"],
+        "requested_quantity": requested_quantity,
+        "dispensed_batches": dispensed_batches
+    }), 200
+
+
+@app.route("/api/medicines/<int:medicine_id>/stock", methods=["GET"])
+def get_sellable_stock(medicine_id):
+    connection = get_db_connection()
+
+    medicine = connection.execute(
+        "SELECT id, name FROM medicines WHERE id = ?",
+        (medicine_id,)
+    ).fetchone()
+
+    if not medicine:
+        connection.close()
+        return jsonify({"error": "Medicine not found"}), 404
+
+    today = date.today().isoformat()
+
+    stock = connection.execute(
+        "SELECT COALESCE(SUM(quantity), 0) AS sellable_stock FROM batches WHERE medicine_id = ? AND quantity > 0 AND expiry_date >= ?",
+        (medicine_id, today)
+    ).fetchone()["sellable_stock"]
+
+    connection.close()
+
+    return jsonify({
+        "medicine": medicine["name"],
+        "sellable_stock": stock,
+        "as_of_date": today
+    })
+
+
+@app.route("/api/alerts/expiring", methods=["GET"])
+def get_expiring_batches():
+    days = max(request.args.get("days", 30, type=int), 1)
+
+    today = date.today()
+    alert_date = today + timedelta(days=days)
+
+    connection = get_db_connection()
+
+    batches = connection.execute(
+        """
+        SELECT
+            batches.id,
+            medicines.name AS medicine_name,
+            batches.batch_number,
+            batches.quantity,
+            batches.expiry_date
+        FROM batches
+        JOIN medicines ON medicines.id = batches.medicine_id
+        WHERE batches.quantity > 0
+          AND batches.expiry_date >= ?
+          AND batches.expiry_date <= ?
+        ORDER BY batches.expiry_date ASC
+        """,
+        (today.isoformat(), alert_date.isoformat())
+    ).fetchall()
+
+    connection.close()
+
+    return jsonify({
+        "days": days,
+        "alerts": [dict(batch) for batch in batches]
+    })
+
+
 @app.route("/api/health")
 def health_check():
     return jsonify({
