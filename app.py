@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database import get_db_connection, init_db
@@ -14,10 +14,7 @@ init_db()
 
 @app.route("/")
 def home():
-    return jsonify({
-        "message": "Pharmacy Inventory System is running!",
-        "status": "success"
-    })
+    return render_template("index.html")
 
 
 @app.route("/api/auth/register", methods=["POST"])
@@ -322,6 +319,18 @@ def get_sellable_stock(medicine_id):
         "sellable_stock": stock,
         "as_of_date": today
     })
+
+@app.route("/register")
+def register_page():
+    return render_template("register.html")
+
+@app.route("/login")
+def login_page():
+    return render_template("login.html")
+
+@app.route("/dashboard")
+def dashboard_page():
+    return render_template("dashboard.html")
 
 
 @app.route("/api/alerts/expiring", methods=["GET"])

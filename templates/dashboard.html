@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - PharmaStock</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="dashboard-page">
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">PharmaStock</a>
+
+            <div class="nav-links">
+                <span id="welcomeUser">Welcome</span>
+                <a href="/" class="nav-button">Home</a>
+            </div>
+        </div>
+    </nav>
+
+
+    <main class="dashboard-container">
+
+        <section class="dashboard-header">
+            <div>
+                <p class="eyebrow">PHARMACY DASHBOARD</p>
+                <h1>Medicine Inventory</h1>
+                <p>
+                    Manage medicines, batches, stock and expiry alerts
+                    from one place.
+                </p>
+            </div>
+        </section>
+
+
+        <!-- Search -->
+        <section class="dashboard-card">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Search Medicines</h2>
+                    <p>Find medicines by name or generic name.</p>
+                </div>
+            </div>
+
+            <div class="search-row">
+                <input
+                    type="text"
+                    id="medicineSearch"
+                    placeholder="Search medicine..."
+                >
+
+                <button
+                    type="button"
+                    class="primary-button"
+                    id="searchButton">
+                    Search
+                </button>
+            </div>
+
+        </section>
+
+
+        <!-- Medicines -->
+        <section class="dashboard-card">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Medicines</h2>
+                    <p>Your pharmacy medicine inventory.</p>
+                </div>
+            </div>
+
+            <div id="medicineList" class="medicine-list">
+                <p>Loading medicines...</p>
+            </div>
+
+        </section>
+
+
+        <!-- Alerts -->
+        <section class="dashboard-card">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Expiry Alerts</h2>
+                    <p>Batches expiring within the next 30 days.</p>
+                </div>
+            </div>
+
+            <div id="expiryAlerts">
+                <p>Loading expiry alerts...</p>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+</body>
+</html>

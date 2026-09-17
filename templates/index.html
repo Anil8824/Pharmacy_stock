@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaStock - Pharmacy Inventory</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <header class="navbar">
+        <div class="container nav-content">
+            <div class="logo">PharmaStock</div>
+
+            <nav>
+                <a href="#features">Features</a>
+                <a href="#how-it-helps">How It Helps</a>
+                <a href="/login">Login</a>
+                <a href="/register" class="nav-button">Get Started</a>
+            </nav>
+        </div>
+    </header>
+
+
+    <main>
+
+        <section class="hero">
+            <div class="container hero-content">
+
+                <div class="hero-text">
+                    <span class="badge">Smart Pharmacy Inventory</span>
+
+                    <h1>
+                        Keep every medicine
+                        <span>safe and in date.</span>
+                    </h1>
+
+                    <p>
+                        Manage medicine batches, track expiry dates and dispense
+                        medicines using First-Expiry-First-Out (FEFO).
+                    </p>
+
+                    <div class="hero-buttons">
+                        <a href="/register" class="primary-button">
+                            Get Started
+                        </a>
+
+                        <a href="#features" class="secondary-button">
+                            Explore Features
+                        </a>
+                    </div>
+                </div>
+
+                <div class="hero-card">
+                    <div class="card-header">
+                        <span>Today's Inventory</span>
+                        <span class="status">● Healthy</span>
+                    </div>
+
+                    <div class="stock-number">330</div>
+                    <p>Sellable units</p>
+
+                    <div class="stock-info">
+                        <div>
+                            <strong>12</strong>
+                            <span>Medicines</span>
+                        </div>
+
+                        <div>
+                            <strong>28</strong>
+                            <span>Active Batches</span>
+                        </div>
+
+                        <div>
+                            <strong>3</strong>
+                            <span>Expiry Alerts</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <section id="features" class="section">
+            <div class="container">
+
+                <div class="section-heading">
+                    <span class="section-label">KEY FEATURES</span>
+                    <h2>Everything needed for safer stock management</h2>
+                    <p>
+                        Built around the daily needs of neighbourhood pharmacies.
+                    </p>
+                </div>
+
+                <div class="feature-grid">
+
+                    <article class="feature-card">
+                        <div class="feature-icon">FEFO</div>
+                        <h3>First-Expiry-First-Out</h3>
+                        <p>
+                            Automatically select the batch with the earliest
+                            expiry date when dispensing medicine.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">✓</div>
+                        <h3>In-Date Stock</h3>
+                        <p>
+                            View sellable stock while automatically excluding
+                            expired batches.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">!</div>
+                        <h3>Expiry Alerts</h3>
+                        <p>
+                            Get early alerts for batches that are approaching
+                            their expiry date.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">⌕</div>
+                        <h3>Quick Search</h3>
+                        <p>
+                            Quickly find medicines and check their available
+                            in-date stock.
+                        </p>
+                    </article>
+
+                </div>
+
+            </div>
+        </section>
+
+
+        <section id="how-it-helps" class="section alternate">
+            <div class="container">
+
+                <div class="section-heading">
+                    <span class="section-label">HOW IT HELPS</span>
+                    <h2>Simple inventory management for pharmacists</h2>
+                </div>
+
+                <div class="steps">
+
+                    <div class="step">
+                        <span>01</span>
+                        <h3>Add medicines</h3>
+                        <p>
+                            Create medicines and record each incoming batch
+                            with its quantity and expiry date.
+                        </p>
+                    </div>
+
+                    <div class="step">
+                        <span>02</span>
+                        <h3>Track stock</h3>
+                        <p>
+                            See current sellable stock and search medicines
+                            whenever you need them.
+                        </p>
+                    </div>
+
+                    <div class="step">
+                        <span>03</span>
+                        <h3>Dispense safely</h3>
+                        <p>
+                            FEFO automatically uses the earliest-expiring
+                            in-date batch first.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+
+        <section class="section next-features">
+            <div class="container">
+
+                <div class="section-heading">
+                    <span class="section-label">NEXT STEPS</span>
+                    <h2>What we would build next</h2>
+                </div>
+
+                <div class="next-grid">
+
+                    <div>
+                        <strong>01</strong>
+                        <h3>Supplier Management</h3>
+                        <p>
+                            Track suppliers and connect incoming batches
+                            with their suppliers.
+                        </p>
+                    </div>
+
+                    <div>
+                        <strong>02</strong>
+                        <h3>Sales Reports</h3>
+                        <p>
+                            View dispensing history and inventory movement
+                            through simple reports.
+                        </p>
+                    </div>
+
+                    <div>
+                        <strong>03</strong>
+                        <h3>Automated Notifications</h3>
+                        <p>
+                            Send email or dashboard notifications when
+                            batches approach expiry.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+
+    <footer>
+        <div class="container">
+            <p>© 2026 PharmaStock. Pharmacy inventory made simpler.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
